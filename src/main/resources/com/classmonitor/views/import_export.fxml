@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.classmonitor.ui.controllers.ImportExportController">
+
+    <top>
+        <HBox spacing="10" styleClass="header-bar">
+            <Label text="CLASS MONITOR" styleClass="header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Dashboard" onAction="#openDashboard" styleClass="btn-primary"/>
+            <Button text="Students" onAction="#openStudents" styleClass="btn-primary"/>
+            <Button text="Reports" onAction="#openReports" styleClass="btn-primary"/>
+            <Button text="Import/Export" onAction="#openImportExport" styleClass="btn-primary"/>
+            <Button text="Settings" onAction="#openSettings" styleClass="btn-primary"/>
+        </HBox>
+
+    </top>
+
+    <center>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
+
+            <Label text="Import / Export" styleClass="page-title"/>
+
+            <HBox spacing="12">
+                <!-- Import -->
+                <VBox styleClass="card" spacing="10" prefWidth="520">
+                    <Label text="Import CSV" styleClass="header-title"/>
+                    <Label text="Import student records from a CSV file. Invalid rows will be skipped and written to an error report in /data."/>
+                    <Button text="Choose CSV and Import" onAction="#importCsv" styleClass="btn-accent"/>
+
+                    <HBox spacing="10">
+                        <Label text="Imported:"/>
+                        <Label fx:id="importedLbl" text="0" styleClass="status-green"/>
+                        <Label text="Errors:"/>
+                        <Label fx:id="errorsLbl" text="0" styleClass="status-red"/>
+                    </HBox>
+
+                    <TextArea fx:id="importLogArea" prefRowCount="10" editable="false"/>
+                </VBox>
+
+                <!-- Export -->
+                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="Export Options" styleClass="header-title"/>
+                    <Button text="Export Full Student List (CSV)" onAction="#exportAll" styleClass="btn-primary"/>
+                    <Button text="Export Top Performers (CSV)" onAction="#exportTop" styleClass="btn-primary"/>
+                    <Button text="Export At Risk (CSV)" onAction="#exportRisk" styleClass="btn-primary"/>
+
+                    <Label fx:id="statusLabel" text="Ready"/>
+
+                    <ProgressBar fx:id="progressBar" prefWidth="260" visible="false"/>
+                    <Label fx:id="progressText" text="" />
+
+
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

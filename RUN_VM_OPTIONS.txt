@@ -1,0 +1,4 @@
+JDK: 21
+
+VM options example:
+--module-path "C:\javafx\javafx-sdk-21\lib" --add-modules javafx.controls,javafx.fxml

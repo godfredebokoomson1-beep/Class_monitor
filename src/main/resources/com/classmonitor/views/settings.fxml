@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.classmonitor.ui.controllers.SettingsController">
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <VBox spacing="6">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Settings" styleClass="h2"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <!-- ===== CONTENT ===== -->
+    <center>
+        <ScrollPane fitToWidth="true">
+            <content>
+                <VBox spacing="18">
+                    <padding>
+                        <Insets top="18" right="18" bottom="18" left="18"/>
+                    </padding>
+
+                    <!-- GPA THRESHOLD -->
+                    <TitledPane text="At-Risk GPA Threshold" expanded="true">
+                        <content>
+                            <VBox spacing="10">
+                                <padding>
+                                    <Insets top="12" right="12" bottom="12" left="12"/>
+                                </padding>
+
+                                <Label text="Students with GPA below this value will be flagged as AT RISK."
+                                       wrapText="true"/>
+
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Threshold:"/>
+                                    <Spinner fx:id="spThreshold" prefWidth="120"/>
+                                    <Label text="(0.00 – 5.00)"/>
+                                </HBox>
+
+                                <Label fx:id="lblThresholdHint"/>
+                            </VBox>
+                        </content>
+                    </TitledPane>
+
+                    <!-- PROGRAMME MANAGEMENT -->
+                    <TitledPane text="Programme List (Optional)" expanded="true">
+                        <content>
+                            <VBox spacing="10">
+                                <padding>
+                                    <Insets top="12" right="12" bottom="12" left="12"/>
+                                </padding>
+
+                                <Label text="Manage programmes used in student records."
+                                       wrapText="true"/>
+
+                                <ListView fx:id="lvProgrammes" prefHeight="220"/>
+
+                                <HBox spacing="10">
+                                    <TextField fx:id="txtProgramme"
+                                               promptText="Programme name..."
+                                               HBox.hgrow="ALWAYS"/>
+                                    <Button text="Add" onAction="#onAddProgramme"/>
+                                    <Button text="Rename" onAction="#onRenameProgramme"/>
+                                    <Button text="Delete" onAction="#onDeleteProgramme"/>
+                                </HBox>
+
+                                <Label fx:id="lblProgMsg"/>
+                            </VBox>
+                        </content>
+                    </TitledPane>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- Footer -->
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="12" right="12" bottom="12" left="12"/>
+            </padding>
+
+            <Button text="Close" onAction="#onClose"/>
+            <Button text="Save Settings" defaultButton="true" onAction="#onSave"/>
+        </HBox>
+    </bottom>
+
+    <!-- your comment text here -->
+
+</BorderPane>

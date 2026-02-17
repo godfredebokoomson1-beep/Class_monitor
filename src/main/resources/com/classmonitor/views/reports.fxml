@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.classmonitor.ui.controllers.ReportsController">
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <HBox spacing="10" styleClass="header-bar">
+            <Label text="CLASS MONITOR" styleClass="header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Dashboard" onAction="#openDashboard" styleClass="btn-primary"/>
+            <Button text="Students" onAction="#openStudents" styleClass="btn-primary"/>
+            <Button text="Reports" onAction="#openReports" styleClass="btn-primary"/>
+            <Button text="Import/Export" onAction="#openImportExport" styleClass="btn-primary"/>
+            <Button text="Settings" onAction="#openSettings" styleClass="btn-primary"/>
+        </HBox>
+
+    </top>
+
+    <!-- ===== CONTENT ===== -->
+    <center>
+        <VBox spacing="18">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
+
+            <!-- SUMMARY CARDS -->
+            <HBox spacing="12">
+                <VBox styleClass="card">
+                    <Label text="Total Students"/>
+                    <Label fx:id="lblTotal" styleClass="header-title"/>
+                </VBox>
+
+                <VBox styleClass="card">
+                    <Label text="At-Risk Students"/>
+                    <Label fx:id="lblAtRisk" styleClass="status-red"/>
+                </VBox>
+
+                <VBox styleClass="card">
+                    <Label text="At-Risk (%)"/>
+                    <Label fx:id="lblPercent"/>
+                </VBox>
+
+                <VBox styleClass="card">
+                    <Label text="GPA Threshold"/>
+                    <Label fx:id="lblThreshold"/>
+                </VBox>
+            </HBox>
+
+            <!-- TABLES -->
+            <HBox spacing="12" VBox.vgrow="ALWAYS">
+
+                <!-- AT RISK STUDENTS -->
+                <VBox styleClass="card" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+                    <Label text="At-Risk Students" styleClass="header-title"/>
+
+                    <TableView fx:id="riskTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="100"/>
+                            <TableColumn fx:id="colName" text="Name" prefWidth="180"/>
+                            <TableColumn fx:id="colProgramme" text="Programme" prefWidth="160"/>
+                            <TableColumn fx:id="colGpa" text="GPA" prefWidth="80"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- PROGRAMME BREAKDOWN -->
+                <VBox styleClass="card" prefWidth="320">
+                    <Label text="Programme Risk Breakdown" styleClass="header-title"/>
+
+                    <TableView fx:id="programmeTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colProgName" text="Programme" prefWidth="200"/>
+                            <TableColumn fx:id="colProgCount" text="At Risk" prefWidth="80"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+            </HBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>

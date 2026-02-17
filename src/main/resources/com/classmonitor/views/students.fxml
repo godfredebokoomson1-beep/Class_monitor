@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.classmonitor.ui.controllers.StudentsController">
+
+    <top>
+        <HBox spacing="10" styleClass="header-bar">
+            <Label text="CLASS MONITOR" styleClass="header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Dashboard" onAction="#openDashboard" styleClass="btn-primary"/>
+            <Button text="Students" onAction="#openStudents" styleClass="btn-primary"/>
+            <Button text="Reports" onAction="#openReports" styleClass="btn-primary"/>
+            <Button text="Import/Export" onAction="#openImportExport" styleClass="btn-primary"/>
+            <Button text="Settings" onAction="#openSettings" styleClass="btn-primary"/>
+        </HBox>
+
+    </top>
+
+    <center>
+        <VBox spacing="12">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
+
+            <!-- Search + Status -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField"
+                           promptText="Search by Student ID or Name..."
+                           HBox.hgrow="ALWAYS"/>
+                <Button text="Search" onAction="#doSearch" styleClass="btn-primary"/>
+                <Button text="Refresh" onAction="#search" styleClass="btn-accent"/>
+                <Label fx:id="statusLabel" text="Ready"/>
+            </HBox>
+
+            <HBox spacing="12">
+
+                <!-- Left: Table -->
+                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                    <Label text="Students List" styleClass="header-title"/>
+
+                    <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="120"/>
+                            <TableColumn fx:id="colName" text="Full Name" prefWidth="220"/>
+                            <TableColumn fx:id="colProgramme" text="Programme" prefWidth="160"/>
+                            <TableColumn fx:id="colLevel" text="Level" prefWidth="80"/>
+                            <TableColumn fx:id="colGpa" text="GPA" prefWidth="80"/>
+                            <TableColumn fx:id="colEmail" text="Email" prefWidth="180"/>
+                            <TableColumn fx:id="colPhone" text="Phone" prefWidth="140"/>
+                            <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- Right: Form -->
+                <VBox styleClass="card" spacing="10" prefWidth="380">
+                    <Label text="Add / Update Student" styleClass="header-title"/>
+
+                    <TextField fx:id="idField" promptText="Student ID (e.g. UMAT1234)"/>
+                    <TextField fx:id="nameField" promptText="Full Name"/>
+                    <ComboBox fx:id="programmeCombo" promptText="Programme" editable="true"/>
+
+                    <HBox spacing="10">
+                        <ComboBox fx:id="levelCombo" promptText="Level" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="gpaField" promptText="GPA (0.0 - 4.0)" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <TextField fx:id="emailField" promptText="Email"/>
+                    <TextField fx:id="phoneField" promptText="Phone (digits only)"/>
+
+                    <ComboBox fx:id="statusCombo" promptText="Status"/>
+
+                    <HBox spacing="10">
+                        <Button text="Add" onAction="#addStudent" styleClass="btn-accent" HBox.hgrow="ALWAYS"/>
+                        <Button text="Update" onAction="#updateStudent" styleClass="btn-primary" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <Button text="Delete Selected" onAction="#deleteStudent" styleClass="btn-primary"/>
+
+                    <Label text="Tip: Click a row to load it into the form."/>
+                </VBox>
+
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
