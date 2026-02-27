@@ -8,18 +8,19 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.classmonitor.ui.controllers.SettingsController">
 
-    <!-- ===== HEADER ===== -->
     <top>
-        <VBox spacing="6">
+        <VBox spacing="8">
             <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
+                <Insets top="15" right="15" bottom="10" left="15"/>
             </padding>
-            <Label text="Settings" styleClass="h2"/>
+
+            <Label text="Application Settings"
+                   style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
             <Separator/>
         </VBox>
     </top>
 
-    <!-- ===== CONTENT ===== -->
     <center>
         <ScrollPane fitToWidth="true">
             <content>
@@ -28,37 +29,59 @@
                         <Insets top="18" right="18" bottom="18" left="18"/>
                     </padding>
 
-                    <!-- GPA THRESHOLD -->
-                    <TitledPane text="At-Risk GPA Threshold" expanded="true">
+                    <!-- ================= GPA THRESHOLDS ================= -->
+                    <TitledPane text="GPA Classification Thresholds" expanded="true">
                         <content>
-                            <VBox spacing="10">
+                            <VBox spacing="14">
                                 <padding>
                                     <Insets top="12" right="12" bottom="12" left="12"/>
                                 </padding>
 
-                                <Label text="Students with GPA below this value will be flagged as AT RISK."
+                                <Label text="Define how students are categorized on the dashboard."
                                        wrapText="true"/>
 
-                                <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="Threshold:"/>
-                                    <Spinner fx:id="spThreshold" prefWidth="120"/>
-                                    <Label text="(0.00 – 5.00)"/>
-                                </HBox>
+                                <GridPane hgap="15" vgap="12">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="170"/>
+                                        <ColumnConstraints minWidth="120"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
 
-                                <Label fx:id="lblThresholdHint"/>
+                                    <Label text="At-Risk Threshold:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <Spinner fx:id="spAtRisk" prefWidth="110"
+                                             GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                    <Label text="GPA &lt; this value = AT RISK"
+                                           GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+
+                                    <Label text="Average Threshold:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <Spinner fx:id="spAverage" prefWidth="110"
+                                             GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                    <Label text="At-Risk ≤ GPA &lt; this value = AVERAGE"
+                                           GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+
+                                    <Label text="Top Threshold:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <Spinner fx:id="spTop" prefWidth="110"
+                                             GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                    <Label text="GPA ≥ this value = TOP STUDENT"
+                                           GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                                </GridPane>
+
+                                <Label fx:id="lblThresholdHint"
+                                       style="-fx-text-fill:#555555;"
+                                       wrapText="true"/>
                             </VBox>
                         </content>
                     </TitledPane>
 
-                    <!-- PROGRAMME MANAGEMENT -->
-                    <TitledPane text="Programme List (Optional)" expanded="true">
+                    <!-- ================= PROGRAMME MANAGEMENT ================= -->
+                    <TitledPane text="Programme Management" expanded="true">
                         <content>
-                            <VBox spacing="10">
+                            <VBox spacing="12">
                                 <padding>
                                     <Insets top="12" right="12" bottom="12" left="12"/>
                                 </padding>
 
-                                <Label text="Manage programmes used in student records."
+                                <Label text="Add, rename, or delete programmes used in student records."
                                        wrapText="true"/>
 
                                 <ListView fx:id="lvProgrammes" prefHeight="220"/>
@@ -72,7 +95,7 @@
                                     <Button text="Delete" onAction="#onDeleteProgramme"/>
                                 </HBox>
 
-                                <Label fx:id="lblProgMsg"/>
+                                <Label fx:id="lblProgMsg" style="-fx-text-fill:#666666;" wrapText="true"/>
                             </VBox>
                         </content>
                     </TitledPane>
@@ -82,18 +105,15 @@
         </ScrollPane>
     </center>
 
-    <!-- Footer -->
     <bottom>
         <HBox spacing="10" alignment="CENTER_RIGHT">
             <padding>
-                <Insets top="12" right="12" bottom="12" left="12"/>
+                <Insets top="12" right="15" bottom="15" left="15"/>
             </padding>
 
             <Button text="Close" onAction="#onClose"/>
             <Button text="Save Settings" defaultButton="true" onAction="#onSave"/>
         </HBox>
     </bottom>
-
-    <!-- your comment text here -->
 
 </BorderPane>

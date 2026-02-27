@@ -4,6 +4,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import com.classmonitor.repository.sqlite.SqliteStudentRepository;
+import com.classmonitor.service.StudentService;
 
 import java.util.prefs.Preferences;
 
@@ -109,4 +111,16 @@ public final class AppNavigator {
             throw new RuntimeException("Failed to load UI: " + fxml + " -> " + e.getMessage(), e);
         }
     }
+
+    private static final SqliteStudentRepository STUDENT_REPO =
+            new SqliteStudentRepository();
+
+    private static final StudentService STUDENT_SERVICE =
+            new StudentService(STUDENT_REPO);
+
+    public static StudentService studentService() {
+        return STUDENT_SERVICE;
+    }
+
+
 }

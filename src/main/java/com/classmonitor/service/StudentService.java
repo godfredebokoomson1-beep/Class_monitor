@@ -68,9 +68,9 @@ public final class StudentService {
         if (!(level == 100 || level == 200 || level == 300 || level == 400 || level == 500 || level == 600 || level == 700))
             throw new com.classmonitor.ValidationException("Level must be one of: 100, 200, 300, 400, 500, 600, 700.");
 
-        // GPA: 0.0..4.0
+        // GPA: 0.0..5.0
         double gpa = s.gpa();
-        if (gpa < 0.0 || gpa > 4.0) throw new com.classmonitor.ValidationException("GPA must be between 0.0 and 4.0.");
+        if (gpa < 0.0 || gpa > 5.0) throw new com.classmonitor.ValidationException("GPA must be between 0.0 and 4.0.");
 
         // Email: contains @ and .
         String email = safe(s.email());

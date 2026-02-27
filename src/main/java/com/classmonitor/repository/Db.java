@@ -37,6 +37,11 @@ public final class Db {
     }
 
     public static Connection getConnection() {
-        return null;
+        try {
+            return get();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 }

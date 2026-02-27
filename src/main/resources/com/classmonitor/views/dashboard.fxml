@@ -1,74 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.PieChart?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.classmonitor.ui.controllers.DashboardController">
+            fx:controller="com.classmonitor.ui.controllers.DashboardController"
+            style="-fx-font-family: 'Segoe UI'; -fx-font-size: 13px;">
 
+    <!-- LEFT SIDEBAR (CIRCULAR NAV BUTTONS) -->
+    <left>
+        <VBox spacing="14" style="-fx-background-color: rgba(0,0,0,0.25);">
+            <padding>
+                <Insets top="18" right="12" bottom="18" left="12"/>
+            </padding>
+
+            <Label text="CM" style="-fx-font-size: 18px; -fx-font-weight: 900;"/>
+            <Separator opacity="0.35"/>
+
+            <!-- Students -->
+            <Button text="🎓" onAction="#openStudents"
+                    styleClass="btn-primary"
+                    style="-fx-font-size: 18px; -fx-font-weight: 800;
+                           -fx-min-width: 56; -fx-min-height: 56;
+                           -fx-pref-width: 56; -fx-pref-height: 56;
+                           -fx-max-width: 56; -fx-max-height: 56;
+                           -fx-background-radius: 999;
+                           -fx-border-radius: 999;
+                           -fx-border-width: 2;
+                           -fx-cursor: hand;">
+                <tooltip><Tooltip text="Students"/></tooltip>
+            </Button>
+
+            <!-- Reports -->
+            <Button text="📊" onAction="#openReports"
+                    styleClass="btn-primary"
+                    style="-fx-font-size: 18px; -fx-font-weight: 800;
+                           -fx-min-width: 56; -fx-min-height: 56;
+                           -fx-pref-width: 56; -fx-pref-height: 56;
+                           -fx-max-width: 56; -fx-max-height: 56;
+                           -fx-background-radius: 999;
+                           -fx-border-radius: 999;
+                           -fx-border-width: 2;
+                           -fx-cursor: hand;">
+                <tooltip><Tooltip text="Reports"/></tooltip>
+            </Button>
+
+            <!-- Import/Export -->
+            <Button text="⬆⬇" onAction="#openImportExport"
+                    styleClass="btn-primary"
+                    style="-fx-font-size: 15px; -fx-font-weight: 900;
+                           -fx-min-width: 56; -fx-min-height: 56;
+                           -fx-pref-width: 56; -fx-pref-height: 56;
+                           -fx-max-width: 56; -fx-max-height: 56;
+                           -fx-background-radius: 999;
+                           -fx-border-radius: 999;
+                           -fx-border-width: 2;
+                           -fx-cursor: hand;">
+                <tooltip><Tooltip text="Import / Export"/></tooltip>
+            </Button>
+
+            <!-- Settings -->
+            <Button text="⚙" onAction="#openSettings"
+                    styleClass="btn-primary"
+                    style="-fx-font-size: 18px; -fx-font-weight: 800;
+                           -fx-min-width: 56; -fx-min-height: 56;
+                           -fx-pref-width: 56; -fx-pref-height: 56;
+                           -fx-max-width: 56; -fx-max-height: 56;
+                           -fx-background-radius: 999;
+                           -fx-border-radius: 999;
+                           -fx-border-width: 2;
+                           -fx-cursor: hand;">
+                <tooltip><Tooltip text="Settings"/></tooltip>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label text="Dashboard" opacity="0.65"/>
+        </VBox>
+    </left>
+
+    <!-- TOP BAR -->
     <top>
-        <HBox spacing="10" styleClass="header-bar">
+        <HBox spacing="10" alignment="CENTER_LEFT" styleClass="header-bar">
+            <padding>
+                <Insets top="14" right="18" bottom="14" left="18"/>
+            </padding>
+
             <Label text="CLASS MONITOR" styleClass="header-title"/>
+            <Label text="— Dashboard" style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-opacity: 0.85;"/>
 
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Students" onAction="#openStudents" styleClass="btn-accent"/>
-            <Button text="Reports" onAction="#openReports" styleClass="btn-primary"/>
-            <Button text="Import/Export" onAction="#openImportExport" styleClass="btn-primary"/>
-            <Button text="Settings" onAction="#openSettings" styleClass="btn-primary"/>
+
+            <!-- Optional quick hint -->
+            <Label text="Overview" style="-fx-opacity: 0.75;"/>
         </HBox>
     </top>
 
+    <!-- MAIN CONTENT -->
     <center>
-        <GridPane hgap="12" vgap="12">
+        <VBox spacing="14">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="18" right="18" bottom="18" left="18"/>
             </padding>
 
-            <columnConstraints>
-                <ColumnConstraints percentWidth="25"/>
-                <ColumnConstraints percentWidth="25"/>
-                <ColumnConstraints percentWidth="25"/>
-                <ColumnConstraints percentWidth="25"/>
-            </columnConstraints>
+            <!-- SUMMARY CARDS -->
+            <GridPane hgap="12" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                </columnConstraints>
 
-            <VBox styleClass="card" GridPane.columnIndex="0">
-                <Label text="Total Students"/>
-                <Label fx:id="totalLbl" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
-            </VBox>
+                <VBox styleClass="card" spacing="6" prefHeight="92" GridPane.columnIndex="0">
+                    <Label text="Total Students" style="-fx-opacity: 0.85;"/>
+                    <Label fx:id="totalLbl" text="0"
+                           style="-fx-font-size: 28px; -fx-font-weight: 900;"/>
+                </VBox>
 
+                <VBox styleClass="card" spacing="6" prefHeight="92" GridPane.columnIndex="1">
+                    <Label text="Active" style="-fx-opacity: 0.85;"/>
+                    <Label fx:id="activeLbl" text="0" styleClass="status-green"
+                           style="-fx-font-size: 26px; -fx-font-weight: 900;"/>
+                </VBox>
 
-            <VBox styleClass="card" GridPane.columnIndex="1">
-                <Label text="Active"/>
-                <Label fx:id="activeLbl" text="0" styleClass="status-green"/>
-            </VBox>
+                <VBox styleClass="card" spacing="6" prefHeight="92" GridPane.columnIndex="2">
+                    <Label text="Inactive" style="-fx-opacity: 0.85;"/>
+                    <Label fx:id="inactiveLbl" text="0" styleClass="status-red"
+                           style="-fx-font-size: 26px; -fx-font-weight: 900;"/>
+                </VBox>
 
-            <VBox styleClass="card" GridPane.columnIndex="2">
-                <Label text="Inactive"/>
-                <Label fx:id="inactiveLbl" text="0" styleClass="status-red"/>
-            </VBox>
+                <VBox styleClass="card" spacing="6" prefHeight="92" GridPane.columnIndex="3">
+                    <Label text="Average GPA" style="-fx-opacity: 0.85;"/>
+                    <Label fx:id="avgGpaLbl" text="0.00"
+                           style="-fx-font-size: 24px; -fx-font-weight: 900;"/>
+                </VBox>
+            </GridPane>
 
-            <VBox styleClass="card" GridPane.columnIndex="3">
-                <Label text="Average GPA"/>
-                <Label fx:id="avgGpaLbl" text="0.00" styleClass="header-title"/>
-            </VBox>
-        </GridPane>
+            <!-- CHARTS ROW (kept exactly: gpaPie + gpaBar) -->
+            <HBox spacing="12" VBox.vgrow="ALWAYS">
 
+                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                    <Label text="GPA Distribution" style="-fx-font-weight: 800; -fx-opacity: 0.9;"/>
+                    <PieChart fx:id="gpaPie" prefHeight="340" VBox.vgrow="ALWAYS"/>
+                </VBox>
 
+                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                    <Label text="GPA by Level" style="-fx-font-weight: 800; -fx-opacity: 0.9;"/>
+                    <BarChart fx:id="gpaBar" prefHeight="340" VBox.vgrow="ALWAYS">
+                        <xAxis><CategoryAxis/></xAxis>
+                        <yAxis><NumberAxis/></yAxis>
+                    </BarChart>
+                </VBox>
 
+            </HBox>
+
+        </VBox>
     </center>
-    <PieChart fx:id="gpaPie" prefHeight="300" prefWidth="420"/>
-    <BarChart fx:id="gpaBar" prefHeight="300" prefWidth="520">
-        <xAxis>
-            <CategoryAxis />
-        </xAxis>
-        <yAxis>
-            <NumberAxis />
-        </yAxis>
-    </BarChart>
 
 </BorderPane>

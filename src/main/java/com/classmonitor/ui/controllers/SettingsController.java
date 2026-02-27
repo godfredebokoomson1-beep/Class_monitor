@@ -1,42 +1,51 @@
 package com.classmonitor.ui.controllers;
 
-import com.classmonitor.repository.ProgrammeDAO;
-import com.classmonitor.repository.SettingsDAO;
 import com.classmonitor.repository.Db;
+import com.classmonitor.repository.SettingsDAO;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class SettingsController {
 
-    @FXML private Spinner<Double> spThreshold;
+    // ===== Thresholds =====
+    @FXML private Spinner<Double> spAtRisk;
+    @FXML private Spinner<Double> spAverage;
+    @FXML private Spinner<Double> spTop;
     @FXML private Label lblThresholdHint;
 
+    // ===== Programmes =====
     @FXML private ListView<String> lvProgrammes;
     @FXML private TextField txtProgramme;
     @FXML private Label lblProgMsg;
 
     private SettingsDAO settingsDAO;
-    private ProgrammeDAO programmeDAO;
+    private Connection conn;
 
-    // Event hook so other screens can refresh after settings change
+    // Optional callback (Dashboard can hook this)
     public static Runnable onSettingsChanged = null;
 
     @FXML
     public void initialize() {
         try {
-            Connection conn = Db.get();
+            conn = Db.get();                 // ✅ your Db.java uses Db.get()
             settingsDAO = new SettingsDAO(conn);
-            programmeDAO = new ProgrammeDAO(conn);
 
-            setupThresholdSpinner();
+            setupSpinners();
+            updateHint();
+
+            ensureProgrammesTable();
             loadProgrammes();
 
-            lvProgrammes.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
-                if (newV != null) txtProgramme.setText(newV);
+            lvProgrammes.getSelectionModel().selectedItemProperty().addListener((obs, o, v) -> {
+                if (v != null) txtProgramme.setText(v);
             });
 
         } catch (Exception e) {
@@ -44,51 +53,61 @@ public class SettingsController {
         }
     }
 
-    private void setupThresholdSpinner() {
-        double current = settingsDAO.getAtRiskThreshold();
+    // ==============================
+    // GPA THRESHOLDS
+    // ==============================
 
-        SpinnerValueFactory.DoubleSpinnerValueFactory vf =
-                new SpinnerValueFactory.DoubleSpinnerValueFactory(0.00, 5.00, current, 0.10);
+    private void setupSpinners() {
+        double atRisk = settingsDAO.getAtRiskThreshold();
+        double avg    = settingsDAO.getAverageThreshold();
+        double top    = settingsDAO.getTopThreshold();
 
-        spThreshold.setValueFactory(vf);
-        spThreshold.setEditable(true);
+        spAtRisk.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.00, 5.00, atRisk, 0.10));
+        spAverage.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.00, 5.00, avg, 0.10));
+        spTop.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.00, 5.00, top, 0.10));
 
-        lblThresholdHint.setText("Current threshold: " + String.format(java.util.Locale.US, "%.2f", current));
+        spAtRisk.setEditable(true);
+        spAverage.setEditable(true);
+        spTop.setEditable(true);
 
-        // Validate user typed values
-        spThreshold.getEditor().textProperty().addListener((obs, oldText, newText) -> {
-            try {
-                double v = Double.parseDouble(newText);
-                if (v < 0 || v > 5) {
-                    lblThresholdHint.setText("Enter a value between 0.00 and 5.00");
-                } else {
-                    lblThresholdHint.setText("Students with GPA < " + String.format(java.util.Locale.US, "%.2f", v) + " are AT RISK");
-                }
-            } catch (Exception ex) {
-                lblThresholdHint.setText("Invalid number format (e.g., 2.50)");
-            }
-        });
+        spAtRisk.getEditor().textProperty().addListener((o, a, b) -> updateHint());
+        spAverage.getEditor().textProperty().addListener((o, a, b) -> updateHint());
+        spTop.getEditor().textProperty().addListener((o, a, b) -> updateHint());
     }
 
-    private void loadProgrammes() {
+    private void updateHint() {
         try {
-            lvProgrammes.setItems(FXCollections.observableArrayList(programmeDAO.getAllProgrammes()));
-            lblProgMsg.setText("");
+            double ar = parseSpinner(spAtRisk);
+            double av = parseSpinner(spAverage);
+            double tp = parseSpinner(spTop);
+
+            lblThresholdHint.setText(String.format(Locale.US,
+                    "At-Risk < %.2f | Average: %.2f – %.2f | Good: %.2f – %.2f | Top ≥ %.2f",
+                    ar, ar, av, av, tp, tp
+            ));
         } catch (Exception e) {
-            showError("Failed to load programmes", e.getMessage());
+            lblThresholdHint.setText("Invalid input. Example: 2.50");
         }
     }
 
     @FXML
     private void onSave() {
         try {
-            double v = parseThreshold();
-            settingsDAO.setAtRiskThreshold(v);
-            lblThresholdHint.setText("Saved. Students with GPA < " + String.format(java.util.Locale.US, "%.2f", v) + " are AT RISK");
+            double ar = parseSpinner(spAtRisk);
+            double av = parseSpinner(spAverage);
+            double tp = parseSpinner(spTop);
+
+            if (!(ar < av && av < tp)) {
+                throw new IllegalArgumentException("Thresholds must follow: At-Risk < Average < Top");
+            }
+
+            settingsDAO.setAtRiskThreshold(round2(ar));
+            settingsDAO.setAverageThreshold(round2(av));
+            settingsDAO.setTopThreshold(round2(tp));
 
             if (onSettingsChanged != null) onSettingsChanged.run();
 
-            Alert a = new Alert(Alert.AlertType.INFORMATION, "Settings saved successfully.", ButtonType.OK);
+            Alert a = new Alert(Alert.AlertType.INFORMATION, "Settings saved.", ButtonType.OK);
             a.setHeaderText(null);
             a.showAndWait();
 
@@ -97,30 +116,67 @@ public class SettingsController {
         }
     }
 
-    private double parseThreshold() {
-        String txt = spThreshold.getEditor().getText();
+    private double parseSpinner(Spinner<Double> sp) {
+        String txt = sp.getEditor().getText();
         double v = Double.parseDouble(txt);
-        if (v < 0 || v > 5) throw new IllegalArgumentException("Threshold must be between 0.00 and 5.00");
+        if (v < 0 || v > 5) throw new IllegalArgumentException("Value must be between 0.00 and 5.00");
+        return v;
+    }
+
+    private double round2(double v) {
         return Math.round(v * 100.0) / 100.0;
     }
 
-    @FXML
-    private void onClose() {
-        Stage st = (Stage) spThreshold.getScene().getWindow();
-        st.close();
+    // ==============================
+    // PROGRAMME MANAGEMENT (SQLite)
+    // ==============================
+
+    private void ensureProgrammesTable() throws Exception {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS programmes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE
+            )
+            """;
+        try (var st = conn.createStatement()) {
+            st.execute(sql);
+        }
     }
 
-    // Programme actions
+    private void loadProgrammes() {
+        try {
+            ArrayList<String> list = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement("SELECT name FROM programmes ORDER BY name");
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(rs.getString(1));
+            }
+            lvProgrammes.setItems(FXCollections.observableArrayList(list));
+            lblProgMsg.setText("");
+        } catch (Exception e) {
+            showError("Failed to load programmes", e.getMessage());
+        }
+    }
+
     @FXML
     private void onAddProgramme() {
-        String name = safeName();
+        String name = safeProgrammeName();
         if (name == null) return;
 
-        try {
-            programmeDAO.addProgramme(name);
-            lblProgMsg.setText("Added: " + name);
+        try (PreparedStatement ps = conn.prepareStatement(
+                "INSERT OR IGNORE INTO programmes(name) VALUES(?)"
+        )) {
+            ps.setString(1, name);
+            int changed = ps.executeUpdate();
+
+            if (changed == 0) {
+                lblProgMsg.setText("Programme already exists: " + name);
+            } else {
+                lblProgMsg.setText("Added: " + name);
+            }
+
             loadProgrammes();
             txtProgramme.clear();
+
         } catch (Exception e) {
             showError("Could not add programme", e.getMessage());
         }
@@ -134,13 +190,31 @@ public class SettingsController {
             return;
         }
 
-        String newName = safeName();
+        String newName = safeProgrammeName();
         if (newName == null) return;
 
-        try {
-            programmeDAO.renameProgramme(selected, newName);
-            lblProgMsg.setText("Renamed to: " + newName);
+        // No change
+        if (selected.equalsIgnoreCase(newName)) {
+            lblProgMsg.setText("No changes made.");
+            return;
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE programmes SET name = ? WHERE name = ?"
+        )) {
+            ps.setString(1, newName);
+            ps.setString(2, selected);
+            int updated = ps.executeUpdate();
+
+            if (updated == 0) {
+                lblProgMsg.setText("Rename failed (programme not found).");
+            } else {
+                lblProgMsg.setText("Renamed to: " + newName);
+            }
+
             loadProgrammes();
+            lvProgrammes.getSelectionModel().select(newName);
+
         } catch (Exception e) {
             showError("Could not rename programme", e.getMessage());
         }
@@ -154,29 +228,47 @@ public class SettingsController {
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Delete programme: " + selected + " ?", ButtonType.CANCEL, ButtonType.OK);
+        Alert confirm = new Alert(
+                Alert.AlertType.CONFIRMATION,
+                "Delete programme: " + selected + " ?",
+                ButtonType.CANCEL, ButtonType.OK
+        );
         confirm.setHeaderText(null);
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
 
-        try {
-            programmeDAO.deleteProgramme(selected);
+        try (PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM programmes WHERE name = ?"
+        )) {
+            ps.setString(1, selected);
+            ps.executeUpdate();
+
             lblProgMsg.setText("Deleted: " + selected);
             loadProgrammes();
             txtProgramme.clear();
+
         } catch (Exception e) {
             showError("Could not delete programme", e.getMessage());
         }
     }
 
-    private String safeName() {
-        String name = txtProgramme.getText() == null ? "" : txtProgramme.getText().trim();
+    private String safeProgrammeName() {
+        String name = (txtProgramme.getText() == null) ? "" : txtProgramme.getText().trim();
         if (name.isBlank()) {
             lblProgMsg.setText("Programme name cannot be empty.");
             return null;
         }
         return name;
+    }
+
+    // ==============================
+    // Close + Alerts
+    // ==============================
+
+    @FXML
+    private void onClose() {
+        Stage st = (Stage) spAtRisk.getScene().getWindow();
+        st.close();
     }
 
     private void showError(String title, String msg) {

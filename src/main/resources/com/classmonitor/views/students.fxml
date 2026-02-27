@@ -6,87 +6,116 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.classmonitor.ui.controllers.StudentsController">
+            fx:controller="com.classmonitor.ui.controllers.StudentsController"
+            style="-fx-font-family:'Segoe UI'; -fx-font-size:13px;">
+
+    <left>
+        <VBox spacing="14" style="-fx-background-color: rgba(0,0,0,0.22);">
+            <padding><Insets top="18" right="12" bottom="18" left="12"/></padding>
+
+            <Label text="CM" style="-fx-font-size:18px; -fx-font-weight:900;"/>
+            <Separator opacity="0.35"/>
+
+            <Button text="🏠" onAction="#openDashboard"
+                    style="-fx-font-size:18px; -fx-font-weight:800;
+                           -fx-min-width:58; -fx-min-height:58;
+                           -fx-pref-width:58; -fx-pref-height:58;
+                           -fx-max-width:58; -fx-max-height:58;
+                           -fx-background-radius:999; -fx-border-radius:999; -fx-border-width:2;">
+                <tooltip><Tooltip text="Dashboard"/></tooltip>
+            </Button>
+
+            <Button text="📊" onAction="#openReports"
+                    style="-fx-font-size:18px; -fx-font-weight:800;
+                           -fx-min-width:58; -fx-min-height:58;
+                           -fx-pref-width:58; -fx-pref-height:58;
+                           -fx-max-width:58; -fx-max-height:58;
+                           -fx-background-radius:999; -fx-border-radius:999; -fx-border-width:2;">
+                <tooltip><Tooltip text="Reports"/></tooltip>
+            </Button>
+
+            <Button text="⬆⬇" onAction="#openImportExport"
+                    style="-fx-font-size:15px; -fx-font-weight:900;
+                           -fx-min-width:58; -fx-min-height:58;
+                           -fx-pref-width:58; -fx-pref-height:58;
+                           -fx-max-width:58; -fx-max-height:58;
+                           -fx-background-radius:999; -fx-border-radius:999; -fx-border-width:2;">
+                <tooltip><Tooltip text="Import / Export"/></tooltip>
+            </Button>
+
+            <Button text="⚙" onAction="#openSettings"
+                    style="-fx-font-size:18px; -fx-font-weight:800;
+                           -fx-min-width:58; -fx-min-height:58;
+                           -fx-pref-width:58; -fx-pref-height:58;
+                           -fx-max-width:58; -fx-max-height:58;
+                           -fx-background-radius:999; -fx-border-radius:999; -fx-border-width:2;">
+                <tooltip><Tooltip text="Settings"/></tooltip>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+            <Label text="Students" opacity="0.6"/>
+        </VBox>
+    </left>
 
     <top>
-        <HBox spacing="10" styleClass="header-bar">
-            <Label text="CLASS MONITOR" styleClass="header-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
+        <VBox spacing="10" style="-fx-padding:14 16; -fx-background-color: rgba(255,255,255,0.04);">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Students" style="-fx-font-size:18px; -fx-font-weight:900;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="statusLabel" text="Ready" opacity="0.75"/>
+            </HBox>
 
-            <Button text="Dashboard" onAction="#openDashboard" styleClass="btn-primary"/>
-            <Button text="Students" onAction="#openStudents" styleClass="btn-primary"/>
-            <Button text="Reports" onAction="#openReports" styleClass="btn-primary"/>
-            <Button text="Import/Export" onAction="#openImportExport" styleClass="btn-primary"/>
-            <Button text="Settings" onAction="#openSettings" styleClass="btn-primary"/>
-        </HBox>
-
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Search..." HBox.hgrow="ALWAYS"/>
+                <Button text="Search" onAction="#doSearch"
+                        style="-fx-font-weight:900; -fx-padding:10 16; -fx-background-radius:14;"/>
+                <Button text="Refresh" onAction="#refresh"
+                        style="-fx-font-weight:900; -fx-padding:10 16; -fx-background-radius:14;"/>
+            </HBox>
+        </VBox>
     </top>
 
     <center>
-        <VBox spacing="12">
-            <padding>
-                <Insets top="18" right="18" bottom="18" left="18"/>
-            </padding>
+        <SplitPane dividerPositions="0.64">
+            <VBox spacing="10" style="-fx-padding:14; -fx-background-color: rgba(255,255,255,0.06); -fx-background-radius:14;">
+                <Label text="Student List" style="-fx-font-weight:800;"/>
+                <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="120"/>
+                        <TableColumn fx:id="colName" text="Name" prefWidth="220"/>
+                        <TableColumn fx:id="colProgramme" text="Programme" prefWidth="170"/>
+                        <TableColumn fx:id="colLevel" text="Level" prefWidth="80"/>
+                        <TableColumn fx:id="colGpa" text="GPA" prefWidth="70"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+                        <TableColumn fx:id="colPhone" text="Phone" prefWidth="140"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
+                    </columns>
+                </TableView>
+            </VBox>
 
-            <!-- Search + Status -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField"
-                           promptText="Search by Student ID or Name..."
-                           HBox.hgrow="ALWAYS"/>
-                <Button text="Search" onAction="#doSearch" styleClass="btn-primary"/>
-                <Button text="Refresh" onAction="#search" styleClass="btn-accent"/>
-                <Label fx:id="statusLabel" text="Ready"/>
-            </HBox>
+            <VBox spacing="10" style="-fx-padding:14; -fx-background-color: rgba(255,255,255,0.06); -fx-background-radius:14;">
+                <Label text="Student Form" style="-fx-font-weight:900; -fx-font-size:14px;"/>
 
-            <HBox spacing="12">
+                <TextField fx:id="idField" promptText="Student ID"/>
+                <TextField fx:id="nameField" promptText="Full Name"/>
+                <ComboBox fx:id="programmeCombo" promptText="Programme" editable="true"/>
+                <ComboBox fx:id="levelCombo" promptText="Level"/>
+                <TextField fx:id="gpaField" promptText="GPA"/>
+                <TextField fx:id="emailField" promptText="Email"/>
+                <TextField fx:id="phoneField" promptText="Phone"/>
+                <ComboBox fx:id="statusCombo" promptText="Status"/>
 
-                <!-- Left: Table -->
-                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
-                    <Label text="Students List" styleClass="header-title"/>
+                <HBox spacing="10">
+                    <Button text="Add" onAction="#addStudent" HBox.hgrow="ALWAYS"
+                            style="-fx-font-weight:900; -fx-padding:12 16; -fx-background-radius:14;"/>
+                    <Button text="Update" onAction="#updateStudent" HBox.hgrow="ALWAYS"
+                            style="-fx-font-weight:900; -fx-padding:12 16; -fx-background-radius:14;"/>
+                </HBox>
 
-                    <TableView fx:id="table" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="colId" text="ID" prefWidth="120"/>
-                            <TableColumn fx:id="colName" text="Full Name" prefWidth="220"/>
-                            <TableColumn fx:id="colProgramme" text="Programme" prefWidth="160"/>
-                            <TableColumn fx:id="colLevel" text="Level" prefWidth="80"/>
-                            <TableColumn fx:id="colGpa" text="GPA" prefWidth="80"/>
-                            <TableColumn fx:id="colEmail" text="Email" prefWidth="180"/>
-                            <TableColumn fx:id="colPhone" text="Phone" prefWidth="140"/>
-                            <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
-                        </columns>
-                    </TableView>
-                </VBox>
-
-                <!-- Right: Form -->
-                <VBox styleClass="card" spacing="10" prefWidth="380">
-                    <Label text="Add / Update Student" styleClass="header-title"/>
-
-                    <TextField fx:id="idField" promptText="Student ID (e.g. UMAT1234)"/>
-                    <TextField fx:id="nameField" promptText="Full Name"/>
-                    <ComboBox fx:id="programmeCombo" promptText="Programme" editable="true"/>
-
-                    <HBox spacing="10">
-                        <ComboBox fx:id="levelCombo" promptText="Level" HBox.hgrow="ALWAYS"/>
-                        <TextField fx:id="gpaField" promptText="GPA (0.0 - 4.0)" HBox.hgrow="ALWAYS"/>
-                    </HBox>
-
-                    <TextField fx:id="emailField" promptText="Email"/>
-                    <TextField fx:id="phoneField" promptText="Phone (digits only)"/>
-
-                    <ComboBox fx:id="statusCombo" promptText="Status"/>
-
-                    <HBox spacing="10">
-                        <Button text="Add" onAction="#addStudent" styleClass="btn-accent" HBox.hgrow="ALWAYS"/>
-                        <Button text="Update" onAction="#updateStudent" styleClass="btn-primary" HBox.hgrow="ALWAYS"/>
-                    </HBox>
-
-                    <Button text="Delete Selected" onAction="#deleteStudent" styleClass="btn-primary"/>
-
-                    <Label text="Tip: Click a row to load it into the form."/>
-                </VBox>
-
-            </HBox>
-        </VBox>
+                <Button text="Delete" onAction="#deleteStudent"
+                        style="-fx-font-weight:900; -fx-padding:12 16; -fx-background-radius:14;"/>
+            </VBox>
+        </SplitPane>
     </center>
+
 </BorderPane>

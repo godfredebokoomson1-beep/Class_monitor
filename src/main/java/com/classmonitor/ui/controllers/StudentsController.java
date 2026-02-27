@@ -39,7 +39,8 @@ public class StudentsController {
     @FXML private ComboBox<String> statusCombo;
 
     private final SqliteStudentRepository repo = new SqliteStudentRepository(); // ✅ no-arg constructor
-    private final StudentService service = new StudentService(repo);
+    private final StudentService service = AppNavigator.studentService();
+
     private final ObservableList<StudentRow> rows = FXCollections.observableArrayList();
 
     private double atRiskThreshold = 2.50;
@@ -167,6 +168,7 @@ public class StudentsController {
 
 
 
+    @FXML
     private void refresh() {
         rows.clear();
 
@@ -174,10 +176,9 @@ public class StudentsController {
                 ? service.findAll()
                 : service.search(searchField.getText().trim());
 
-        for (Student s : list) {
-            rows.add(toRow(s));
-        }
+        for (Student s : list) rows.add(toRow(s));
     }
+
 
     private Student buildStudent(boolean isCreate) {
         String id = idField.getText();
@@ -197,7 +198,7 @@ public class StudentsController {
 
         double gpa;
         try { gpa = Double.parseDouble(gpaTxt.trim()); }
-        catch (Exception e) { throw new ValidationException("GPA must be a number (0.0 - 4.0)."); }
+        catch (Exception e) { throw new ValidationException("GPA must be a number (0.0 - 5.0)."); }
 
         String dateIso = LocalDate.now().toString();
 

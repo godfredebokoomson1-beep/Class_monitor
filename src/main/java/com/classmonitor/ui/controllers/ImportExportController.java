@@ -41,7 +41,8 @@ public class ImportExportController {
     private final CsvService csv = new CsvService();
 
     // Export uses StudentService so we can write to a user-chosen file location
-    private final StudentService studentService = new StudentService(new SqliteStudentRepository());
+    private final StudentService studentService = AppNavigator.studentService();
+
 
     // Tunables
     private static final double AT_RISK_GPA = 2.50;
@@ -91,15 +92,24 @@ public class ImportExportController {
 
     @FXML
     public void exportAll() {
-        File file = chooseSaveFile("Export All Students", "students_all.csv");
-        if (file == null) return;
+        statusLabel.setText("Exporting all...");
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                csv.exportAllStudents();
+                return null;
+            }
+        };
 
-        runExportTask("export-all", "Exporting all...", () -> {
-            List<Student> students = studentService.findAll();
-            writeStudentsCsv(students, file);
-            onExportSuccess(file);
-        });
+        task.setOnSucceeded(e -> statusLabel.setText("Done (saved to /data/students_all.csv)"));
+        task.setOnFailed(e -> statusLabel.setText("Export failed: " + task.getException().getMessage()));
+
+        Thread t = new Thread(task, "export-all");
+        t.setDaemon(true);
+        t.start();
     }
+
+
 
     @FXML
     public void exportTop() {
